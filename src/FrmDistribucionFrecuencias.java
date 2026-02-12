@@ -4,8 +4,12 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+import javax.swing.table.DefaultTableModel;
 
 public class FrmDistribucionFrecuencias extends JFrame {
 
@@ -38,12 +42,26 @@ public class FrmDistribucionFrecuencias extends JFrame {
         String[] opciones = { "Excelente", "Buena", "Regular", "Mala" };
         cmbRespuesta.setModel(new DefaultComboBoxModel(opciones));
 
-        JButton btnAgregar=new JButton(">>");
-        btnAgregar.setBounds(10, 95,100, 25);
+        JButton btnAgregar = new JButton(">>");
+        btnAgregar.setBounds(10, 95, 100, 25);
         add(btnAgregar);
 
-        JButton btnQuitar=new JButton("<<");
-        btnQuitar.setBounds(10, 125,100, 25);
+        JButton btnQuitar = new JButton("<<");
+        btnQuitar.setBounds(10, 125, 100, 25);
         add(btnQuitar);
+
+        JList lstRespuestas = new JList();
+        lstRespuestas.setBounds(110, 95, 100, 100);
+        add(lstRespuestas);
+
+        JTable tblDistribucion = new JTable();
+        JScrollPane spDistribucion = new JScrollPane(tblDistribucion);
+        spDistribucion.setBounds(10, 200, 450, 100);
+        add(spDistribucion);
+
+        String[] encabezados = { "Variable", "Frecuencia absoluta (f)", "Frecuencia acumulada (F)",
+                "Frecuencia relativa (fr)", "Frecuencia porcentual (%f)" };
+
+        tblDistribucion.setModel(new DefaultTableModel(null, encabezados));
     }
 }
