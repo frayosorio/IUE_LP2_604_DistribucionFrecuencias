@@ -1,10 +1,10 @@
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -12,6 +12,12 @@ import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class FrmDistribucionFrecuencias extends JFrame {
+    private JComboBox cmbRespuesta;
+    private JList lstRespuestas;
+    private String[] opciones = { "Excelente", "Buena", "Regular", "Mala" };
+    private JTable tblDistribucion;
+    String[] encabezados = { "Variable", "Frecuencia absoluta (f)", "Frecuencia acumulada (F)",
+            "Frecuencia relativa (fr)", "Frecuencia porcentual (%f)" };
 
     // metodo constructor
     public FrmDistribucionFrecuencias() {
@@ -35,11 +41,10 @@ public class FrmDistribucionFrecuencias extends JFrame {
         lblTituloRespuesta.setBounds(10, 65, 100, 25);
         add(lblTituloRespuesta);
 
-        JComboBox cmbRespuesta = new JComboBox();
+        cmbRespuesta = new JComboBox();
         cmbRespuesta.setBounds(110, 65, 100, 25);
         add(cmbRespuesta);
 
-        String[] opciones = { "Excelente", "Buena", "Regular", "Mala" };
         cmbRespuesta.setModel(new DefaultComboBoxModel(opciones));
 
         JButton btnAgregar = new JButton(">>");
@@ -50,18 +55,82 @@ public class FrmDistribucionFrecuencias extends JFrame {
         btnQuitar.setBounds(10, 125, 100, 25);
         add(btnQuitar);
 
-        JList lstRespuestas = new JList();
-        lstRespuestas.setBounds(110, 95, 100, 100);
-        add(lstRespuestas);
+        lstRespuestas = new JList();
+        JScrollPane spRespuestas = new JScrollPane(lstRespuestas);
+        spRespuestas.setBounds(110, 95, 100, 100);
+        add(spRespuestas);
 
-        JTable tblDistribucion = new JTable();
+        JButton btnCalcular = new JButton("Calcular");
+        btnCalcular.setBounds(10, 200, 100, 25);
+        add(btnCalcular);
+
+        tblDistribucion = new JTable();
         JScrollPane spDistribucion = new JScrollPane(tblDistribucion);
-        spDistribucion.setBounds(10, 200, 450, 100);
+        spDistribucion.setBounds(10, 240, 450, 100);
         add(spDistribucion);
 
-        String[] encabezados = { "Variable", "Frecuencia absoluta (f)", "Frecuencia acumulada (F)",
-                "Frecuencia relativa (fr)", "Frecuencia porcentual (%f)" };
-
         tblDistribucion.setModel(new DefaultTableModel(null, encabezados));
+
+        // Eventos
+        btnAgregar.addActionListener(e -> {
+            agregarRespuesta();
+        });
+        btnQuitar.addActionListener(e -> {
+            quitarRespuesta();
+        });
+        btnCalcular.addActionListener(e -> {
+            calcularDistribucion();
+        });
+    }
+
+    private String[] respuestas = new String[1000];
+    private int totalRespuestas = -1;
+
+    private void agregarRespuesta() {
+        totalRespuestas++;
+        respuestas[totalRespuestas] = cmbRespuesta.getSelectedItem().toString();
+        mostrarRespuestas();
+    }
+
+    private void mostrarRespuestas() {
+        String[] respuestasAMostrar = new String[totalRespuestas + 1];
+        for (int i = 0; i <= totalRespuestas; i++) {
+            respuestasAMostrar[i] = respuestas[i];
+        }
+        lstRespuestas.setListData(respuestasAMostrar);
+    }
+
+    private void quitarRespuesta() {
+        if (lstRespuestas.getSelectedIndex() >= 0) {
+            for (int i = lstRespuestas.getSelectedIndex(); i < totalRespuestas; i++) {
+                respuestas[i] = respuestas[i + 1];
+            }
+            totalRespuestas--;
+            mostrarRespuestas();
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento");
+        }
+    }
+
+    private void calcularDistribucion() {
+        // calcular la tabla de frecuencias
+        double[][] tablaFrecuencias = new double[opciones.length][4];
+        for (int i = 0; i <= totalRespuestas; i++) {
+            for (int j = 0; j < opciones.length; j++) {
+                if (respuestas[i].equals(opciones[j])) {
+                    tablaFrecuencias[j][0]++;
+                    break;
+                }
+            }
+        }
+        // Mostrar la tabla de frecuencias
+        String[][] tablaFrecuenciasMostrar = new String[opciones.length][5];
+        for (int i = 0; i < opciones.length; i++) {
+            tablaFrecuenciasMostrar[i][0] = opciones[i];
+            tablaFrecuenciasMostrar[i][1] = String.valueOf(tablaFrecuencias[i][0]);
+        }
+        DefaultTableModel dtm = new DefaultTableModel(tablaFrecuenciasMostrar, encabezados);
+        tblDistribucion.setModel(dtm);
+
     }
 }
