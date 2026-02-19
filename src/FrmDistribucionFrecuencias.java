@@ -94,6 +94,7 @@ public class FrmDistribucionFrecuencias extends JFrame {
 
     private void mostrarRespuestas() {
         String[] respuestasAMostrar = new String[totalRespuestas + 1];
+        // recorrer todas las respuestas agregadas
         for (int i = 0; i <= totalRespuestas; i++) {
             respuestasAMostrar[i] = respuestas[i];
         }
@@ -115,7 +116,10 @@ public class FrmDistribucionFrecuencias extends JFrame {
     private void calcularDistribucion() {
         // calcular la tabla de frecuencias
         double[][] tablaFrecuencias = new double[opciones.length][4];
+        // ***** Calculo de la frecuencia absoluta *****
+        // recorrer todas las respuestas agregadas
         for (int i = 0; i <= totalRespuestas; i++) {
+            // recorrer todas las opciones
             for (int j = 0; j < opciones.length; j++) {
                 if (respuestas[i].equals(opciones[j])) {
                     tablaFrecuencias[j][0]++;
@@ -123,11 +127,28 @@ public class FrmDistribucionFrecuencias extends JFrame {
                 }
             }
         }
-        // Mostrar la tabla de frecuencias
+        // Mostrar y terminar de calcular la tabla de frecuencias
         String[][] tablaFrecuenciasMostrar = new String[opciones.length][5];
         for (int i = 0; i < opciones.length; i++) {
+            // ***** calcular la frecuencia acumulada *****
+            if (i == 0) {
+                tablaFrecuencias[i][1] = tablaFrecuencias[i][0];
+            } else {
+                tablaFrecuencias[i][1] = tablaFrecuencias[i][0] + tablaFrecuencias[i - 1][1];
+            }
+
+            // ***** calcular la frecuencia relativa *****
+            tablaFrecuencias[i][2] = tablaFrecuencias[i][0] / (totalRespuestas + 1);
+
+            // ***** calcular la frecuencia porcentual *****
+            tablaFrecuencias[i][3] = tablaFrecuencias[i][2] * 100;
+
+            // asignar a matriz de resultados
             tablaFrecuenciasMostrar[i][0] = opciones[i];
             tablaFrecuenciasMostrar[i][1] = String.valueOf(tablaFrecuencias[i][0]);
+            tablaFrecuenciasMostrar[i][2] = String.valueOf(tablaFrecuencias[i][1]);
+            tablaFrecuenciasMostrar[i][3] = String.valueOf(tablaFrecuencias[i][2]);
+            tablaFrecuenciasMostrar[i][4] = String.valueOf(tablaFrecuencias[i][3]);
         }
         DefaultTableModel dtm = new DefaultTableModel(tablaFrecuenciasMostrar, encabezados);
         tblDistribucion.setModel(dtm);
